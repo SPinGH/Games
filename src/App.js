@@ -1,4 +1,5 @@
 import { Themes } from './constants.js';
+import './App.scss';
 
 export default class App {
 

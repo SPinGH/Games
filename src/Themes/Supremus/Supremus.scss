@@ -1,0 +1,162 @@
+body {
+    perspective: 800px;
+}
+
+.supremus {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.page {
+    position: absolute;
+    transition: transform 3s ease-out;
+    height: 100%;
+    width: 100%;
+
+    .move {
+        transform: translate(0, 0);
+        transition: transform 3s ease, r 1s ease, d 1s ease, cx 1s ease;
+        path {
+            transition: d 1s ease;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .clickable {
+            cursor: pointer;
+        }
+
+        .clickable .hover {
+            transition: transform 1s ease;
+        }
+
+        .clickable:hover {
+            & > path:first-child {
+                stroke: black;
+                stroke-width: 5px;
+            }
+            .hover {
+                transform: translate3d(-5px, -5px, 100px);
+            }
+        }
+    }
+}
+
+.left,
+.right {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 7vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(#ccc, 0.2);
+    }
+    &__arrow {
+        width: 70%;
+    }
+}
+
+.left {
+    left: 0;
+}
+.right {
+    right: 0;
+    transform: rotate(180deg);
+}
+
+.arriveRightFg {
+    animation: rightfg 3s ease-out;
+}
+.leaveRightFg {
+    transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, 10px, 100vw) !important;
+}
+.arriveLeftFg {
+    animation: leftfg 3s ease-out;
+}
+.leaveLeftFg {
+    transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, 10px, 100vw) !important;
+}
+.arriveLeftBg {
+    animation: leftbg 3s ease-out;
+}
+.leaveLeftBg {
+    transform: rotate3d(0, 1, 0, 20deg) translate3d(-150vw, 10px, -150vw) !important;
+}
+.arriveRightBg {
+    animation: rightbg 3s ease-out;
+}
+.leaveRightBg {
+    transform: rotate3d(0, 1, 0, -20deg) translate3d(150vw, 10px, -150vw) !important;
+}
+
+.arriveTopFg {
+    animation: topfg 3s ease-out;
+}
+.leaveTopFg {
+    transform: rotate3d(1, 0, 0, -10deg) translate3d(0, 200vh, -50vw) !important;
+}
+.arriveTopBg {
+    animation: topbg 3s ease-out;
+}
+.leaveTopBg {
+    transform: rotate3d(1, 0, 0, -10deg) translate3d(0, -120vw, 100vw) !important;
+}
+
+@keyframes rightbg {
+    0% {
+        transform: rotate3d(0, 1, 0, -20deg) translate3d(150vw, 10px, -150vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+@keyframes leftbg {
+    0% {
+        transform: rotate3d(0, 1, 0, 20deg) translate3d(-150vw, 10px, -150vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+@keyframes rightfg {
+    0% {
+        transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, 10px, 100vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+@keyframes leftfg {
+    0% {
+        transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, 10px, 100vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes topfg {
+    0% {
+        transform: rotate3d(1, 0, 0, -10deg) translate3d(0, 200vh, -50vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+@keyframes topbg {
+    0% {
+        transform: rotate3d(1, 0, 0, -10deg) translate3d(0, -120vh, 100vw);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}

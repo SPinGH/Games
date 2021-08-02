@@ -20,7 +20,10 @@ export default class Themes {
                 document.onwheel = null;
                 clearEvents();
 
+                this.rootElement.classList.add('blocked');
+
                 setTimeout(() => {
+                    this.rootElement.classList.remove('blocked');
                     this.rootElement.remove();
                     changeTheme(THEMES[index]);
                 }, 3000);

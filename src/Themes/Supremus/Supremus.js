@@ -31,6 +31,9 @@ export default class Supremus {
         this.curPage = this.pages[0];
         this.curPage.Show('arriveTopFg');
 
+        this.supremus.classList.add('blocked');
+        setTimeout(() => this.supremus.classList.remove('blocked'), 3000);
+
         this.InitMouseMove(this.curPage);
         this.InitShapesMove(this.curPage);
     }
@@ -88,6 +91,9 @@ export default class Supremus {
         this.InitShapesMove(this.pages[to]);
 
         this.curPage = this.pages[to];
+
+        this.supremus.classList.add('blocked');
+        setTimeout(() => this.supremus.classList.remove('blocked'), 3000);
     }
 
     ClearEvent() {

@@ -20,7 +20,8 @@ export default class Supremus {
             new Themes(
                 this.supremus,
                 () => { this.ChangePage(1, 0); },
-                changeTheme),
+                changeTheme,
+                this.ClearEvent.bind(this)),
             new About(
                 this.supremus,
                 () => { this.ChangePage(2, 0); }
@@ -87,5 +88,13 @@ export default class Supremus {
         this.InitShapesMove(this.pages[to]);
 
         this.curPage = this.pages[to];
+    }
+
+    ClearEvent() {
+        this.curPage.page.onmousemove = null;
+        this.handlers.forEach(index => {
+            clearTimeout(index);
+        });
+        this.handlers = [];
     }
 }

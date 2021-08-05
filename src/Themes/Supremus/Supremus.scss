@@ -42,12 +42,16 @@ body {
         transition: transform 3s ease-out;
     }
 
+    path,
+    circle,
+    line,
+    g {
+        transition: transform 1s ease, d 1s ease, r 1s ease, cy 1s ease, cx 1s ease;
+    }
+
     .move {
         transform: translate(0, 0);
         transition: transform 3s ease, r 1s ease, d 1s ease, cx 1s ease;
-        path {
-            transition: d 1s ease;
-        }
     }
 
     @media (min-width: 768px) {
@@ -60,7 +64,7 @@ body {
         }
 
         .clickable:hover {
-            & > path:first-child {
+            .stroke {
                 stroke: black;
                 stroke-width: 5px;
             }

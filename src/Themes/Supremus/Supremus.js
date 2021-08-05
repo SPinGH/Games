@@ -2,6 +2,7 @@ import { createDiv, randomInt } from '@/utils.js';
 import Themes from './Themes.js';
 import Menu from './Menu.js';
 import About from './About.js';
+import TicTacToe from './TicTacToe.js';
 import './Supremus.scss';
 
 export default class Supremus {
@@ -16,7 +17,8 @@ export default class Supremus {
             new Menu(
                 this.supremus,
                 () => { this.ChangePage(0, 1); },
-                () => { this.ChangePage(0, 2); }),
+                () => { this.ChangePage(0, 2); },
+                () => { this.ChangePage(0, 3); }),
             new Themes(
                 this.supremus,
                 () => { this.ChangePage(1, 0); },
@@ -24,8 +26,10 @@ export default class Supremus {
                 this.ClearEvent.bind(this)),
             new About(
                 this.supremus,
-                () => { this.ChangePage(2, 0); }
-            )
+                () => { this.ChangePage(2, 0); }),
+            new TicTacToe(
+                this.supremus,
+                () => { this.ChangePage(3, 0); })
         ];
 
         this.curPage = this.pages[0];

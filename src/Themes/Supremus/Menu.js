@@ -2,11 +2,12 @@ import { createDiv, createSVGElement } from '@/utils.js';
 
 export default class Menu {
 
-    constructor(element, toThemes, toAbout, toTicTacToe) {
+    constructor(element, toThemes, toAbout, toTetris, toTicTacToe) {
         this.rootElement = element;
 
         [this.leftArrow, this.page, this.arkanoid, this.tetris, this.tictactoe, this.rightArrow] = GetMenu();
 
+        if (this.tetris) { this.tetris.addEventListener('click', toTetris); }
         if (this.tictactoe) { this.tictactoe.addEventListener('click', toTicTacToe); }
         if (this.leftArrow) { this.leftArrow.addEventListener('click', toThemes); }
         if (this.rightArrow) { this.rightArrow.addEventListener('click', toAbout); }

@@ -3,6 +3,7 @@ import Themes from './Themes.js';
 import Menu from './Menu.js';
 import About from './About.js';
 import Tetris from './Tetris.js';
+import Arkanoid from './Arkanoid.js';
 import TicTacToe from './TicTacToe.js';
 import './Supremus.scss';
 
@@ -20,7 +21,8 @@ export default class Supremus {
                 () => { this.ChangePage(0, 1); },
                 () => { this.ChangePage(0, 2); },
                 () => { this.ChangePage(0, 3); },
-                () => { this.ChangePage(0, 4); }),
+                () => { this.ChangePage(0, 4); },
+                () => { this.ChangePage(0, 5); }),
             new Themes(
                 this.supremus,
                 () => { this.ChangePage(1, 0); },
@@ -32,9 +34,12 @@ export default class Supremus {
             new Tetris(
                 this.supremus,
                 () => { this.ChangePage(3, 0); }),
+            new Arkanoid(
+                this.supremus,
+                () => { this.ChangePage(4, 0); }),
             new TicTacToe(
                 this.supremus,
-                () => { this.ChangePage(4, 0); })
+                () => { this.ChangePage(5, 0); })
         ];
 
         this.curPage = this.pages[0];

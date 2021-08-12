@@ -7,11 +7,11 @@ export default class Menu {
 
         [this.leftArrow, this.page, this.arkanoid, this.tetris, this.tictactoe, this.rightArrow] = GetMenu();
 
-        if (this.tetris) { this.tetris.addEventListener('click', toTetris); }
-        if (this.arkanoid) { this.arkanoid.addEventListener('click', toArkanoid); }
-        if (this.tictactoe) { this.tictactoe.addEventListener('click', toTicTacToe); }
-        if (this.leftArrow) { this.leftArrow.addEventListener('click', toThemes); }
-        if (this.rightArrow) { this.rightArrow.addEventListener('click', toAbout); }
+        this.tetris.addEventListener('click', toTetris);
+        this.arkanoid.addEventListener('click', toArkanoid);
+        this.tictactoe.addEventListener('click', toTicTacToe);
+        this.leftArrow.addEventListener('click', toThemes);
+        this.rightArrow.addEventListener('click', toAbout);
     }
 
     Show(className) {
@@ -40,7 +40,7 @@ export default class Menu {
 }
 
 function GetMenu() {
-    let page = createDiv('page',
+    let page = createDiv('page menu',
         `<svg height="100%" width="100%" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
             <path class="move" fill="#3638AB" d="M351.8,85l7.3,5L330,137l-7.8-3.9L351.8,85z" />
             <path class="move" fill="#3638AB" d="M369.7,15.1l-6.2-3.9L215.9,246.1l4.5,3.4L369.7,15.1z" />

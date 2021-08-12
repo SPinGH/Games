@@ -21,9 +21,10 @@ export default class Arkanoid {
         this.rootElement = element;
         [this.backArrow, this.page, this.reset, this.score, this.lifes, this.canvas] = GetTetris();
         this.game = new Game(
+            this.page,
             this.canvas,
-            this.OnScoreChanged.bind(this),
-            this.OnLifesChanged.bind(this)
+            this.OnScoreChanged,
+            this.OnLifesChanged
         );
 
         this.game.DrawBrick = this.DrawBrick.bind(this.game);
@@ -140,7 +141,7 @@ export default class Arkanoid {
         }
     }
 
-    OnResize() {
+    OnResize = () => {
         let width, height;
         if (window.innerHeight > window.innerWidth * 9 / 16) {
             width = window.innerWidth;
@@ -156,7 +157,7 @@ export default class Arkanoid {
         this.game.Resize(this.canvas);
     }
 
-    OnScoreChanged() {
+    OnScoreChanged = () => {
         this.score.innerHTML = '';
         let score = String(this.game.score).padStart(5, '0');
         for (let i = 0; i < score.length; i++) {
@@ -164,7 +165,7 @@ export default class Arkanoid {
         }
     }
 
-    OnLifesChanged() {
+    OnLifesChanged = () => {
         this.lifes.innerHTML = '';
         for (let i = 0; i < this.game.lifes; i++) {
             this.lifes.append(createSVGElement('path', { d: `M${1029.2 + i * 90},164.9l62.9,-3.0l5.1,62.9l-63.9,4.0Z`, fill: '#9B0D0C' }));
@@ -179,14 +180,14 @@ export default class Arkanoid {
 
         setTimeout(() => {
             this.page.classList.remove(className);
-            window.onresize = this.OnResize.bind(this);
+            window.addEventListener('resize', this.OnResize);
         }, 3000)
     }
 
     Leave(className) {
         this.page.classList.add(className);
 
-        window.onresize = null;
+        window.removeEventListener('resize', this.OnResize);
         this.game.Stop();
 
         setTimeout(() => {

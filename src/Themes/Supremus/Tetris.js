@@ -8,9 +8,10 @@ export default class Tetris {
         [this.backArrow, this.page, this.reset, this.nextFigure, this.score, this.canvas] = GetTetris();
 
         this.game = new Game(
+            this.page,
             this.canvas,
-            this.OnFigureChanged.bind(this),
-            this.OnScoreChanged.bind(this),
+            this.OnFigureChanged,
+            this.OnScoreChanged,
             15, 15);
 
         this.game.DrawTile = this.DrawTile.bind(this.game);
@@ -60,7 +61,7 @@ export default class Tetris {
         this.ctx.fillRect(j * this.tile, i * this.tile, this.tile, this.tile);
     }
 
-    OnResize() {
+    OnResize = () => {
         let width, height;
         if (window.innerHeight > window.innerWidth * 9 / 16) {
             width = window.innerWidth;
@@ -76,14 +77,14 @@ export default class Tetris {
         this.game.tile = this.canvas.height / this.game.window.height;
     }
 
-    OnFigureChanged() {
+    OnFigureChanged = () => {
         for (let i = 0; i < this.nextFigure.children.length; i++) {
             this.nextFigure.children[i].style.transform = 'scale(0) rotate(-30deg)';
         }
         this.nextFigure.children[this.game.nextFigure].style.transform = 'scale(1)';
     }
 
-    OnScoreChanged() {
+    OnScoreChanged = () => {
         this.score.innerHTML = '';
         let score = String(this.game.score).padStart(5, '0');
         for (let i = 0; i < score.length; i++) {
@@ -99,14 +100,14 @@ export default class Tetris {
 
         setTimeout(() => {
             this.page.classList.remove(className);
-            window.onresize = this.OnResize.bind(this);
+            window.addEventListener('resize', this.OnResize);
         }, 3000)
     }
 
     Leave(className) {
         this.page.classList.add(className);
 
-        window.onresize = null;
+        window.removeEventListener('resize', this.OnResize);
         this.game.Stop();
 
         setTimeout(() => {

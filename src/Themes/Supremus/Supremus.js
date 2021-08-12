@@ -1,4 +1,5 @@
 import { createDiv, randomInt } from '@/utils.js';
+import { IsMobile } from '@/constants.js'
 import Themes from './Themes.js';
 import Menu from './Menu.js';
 import About from './About.js';
@@ -48,19 +49,17 @@ export default class Supremus {
         this.supremus.classList.add('blocked');
         setTimeout(() => this.supremus.classList.remove('blocked'), 3000);
 
-        this.InitMouseMove(this.curPage);
+        if (!IsMobile) { this.InitMouseMove(this.curPage); }
         this.InitShapesMove(this.curPage);
     }
 
     InitMouseMove(page) {
-        this.curPage.page.onmousemove = null;
-
         setTimeout(() => {
             page.page.style.transform = '';
-            page.page.onmousemove = (e) => {
+            page.page.onmousemove = page.page.onmousemove ?? ((e) => {
                 page.page.style.transform = 'rotate3d(0, 1, 0,' + (e.clientX - window.innerWidth / 2) / 60 + 'deg) ' +
                     'rotate3d(1, 0, 0,' + -(e.clientY - window.innerHeight / 2) / 30 + 'deg)';
-            }
+            });
         }, 3000);
     }
 
@@ -101,7 +100,7 @@ export default class Supremus {
         this.pages[from].Leave(fromClass);
         this.pages[to].Show(toClass);
 
-        this.InitMouseMove(this.pages[to]);
+        if (!IsMobile) { this.InitMouseMove(this.pages[to]); }
         this.InitShapesMove(this.pages[to]);
 
         this.curPage = this.pages[to];
@@ -111,10 +110,8 @@ export default class Supremus {
     }
 
     ClearEvent() {
-        this.curPage.page.onmousemove = null;
         this.handlers.forEach(index => {
             clearTimeout(index);
         });
-        this.handlers = [];
     }
 }

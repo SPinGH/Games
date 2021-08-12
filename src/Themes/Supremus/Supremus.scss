@@ -38,6 +38,12 @@ body {
     height: 100%;
     width: 100%;
 
+    &.menu svg {
+        @media (max-width: 560px) {
+            transform: scale(2) translate(13%, -10vh) rotate(-30deg);
+        }
+    }
+
     svg {
         transition: transform 3s ease-out;
         overflow: visible;
@@ -111,13 +117,13 @@ body {
     animation: rightfg 3s ease-out;
 }
 .leaveRightFg {
-    transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, 10px, 100vw) !important;
+    transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, -20%, 100vw) !important;
 }
 .arriveLeftFg {
     animation: leftfg 3s ease-out;
 }
 .leaveLeftFg {
-    transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, 10px, 100vw) !important;
+    transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, -20%, 100vw) !important;
 }
 .arriveLeftBg {
     animation: leftbg 3s ease-out;
@@ -163,7 +169,7 @@ body {
 }
 @keyframes rightfg {
     0% {
-        transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, 10px, 100vw);
+        transform: rotate3d(0, 1, 0, -20deg) translate3d(120vw, -20%, 100vw);
     }
     100% {
         transform: translate3d(0, 0, 0);
@@ -171,7 +177,7 @@ body {
 }
 @keyframes leftfg {
     0% {
-        transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, 10px, 100vw);
+        transform: rotate3d(0, 1, 0, 20deg) translate3d(-120vw, -20%, 100vw);
     }
     100% {
         transform: translate3d(0, 0, 0);

@@ -1,7 +1,8 @@
 import { randomInt } from '@/utils.js';
+import { IsMobile } from "@/constants";
 
 function windowToCanvas(canvas, x, y) {
-    var bbox = canvas.getBoundingClientRect();
+    let bbox = canvas.getBoundingClientRect();
     if (bbox.width === 0 || bbox.height === 0) {
         return { X: 0, Y: 0 }
     }
@@ -12,7 +13,7 @@ function windowToCanvas(canvas, x, y) {
 }
 
 export class Arkanoid {
-    constructor(canvas, OnScoreChanged, OnLifesChanged) {
+    constructor(element, canvas, OnScoreChanged, OnLifesChanged) {
         this.OnScoreChanged = OnScoreChanged;
         this.OnLifesChanged = OnLifesChanged;
         this.ctx = canvas.getContext('2d');
@@ -45,39 +46,65 @@ export class Arkanoid {
         this.ball = {
             x: this.window.width / 2,
             y: this.carriage.y - this.window.width / 40,
-            speed: 3,
+            speed: this.window.width / 150,
             dx: 0,
             dy: 0,
             rad: this.window.width / 40,
         }
-        document.onkeydown = this.OnKeyDown.bind(this);
-        canvas.onmousemove = (event) => {
-            let loc = windowToCanvas(canvas, event.clientX, event.clientY);
-            let lastCarrieage = this.carriage.x;
-            loc.X -= this.carriage.width / 2;
-            if (loc.X <= 0) {
-                this.carriage.x = 0;
-            } else if (loc.X + this.carriage.width >= canvas.width) {
-                this.carriage.x = canvas.width - this.carriage.width;
-            } else {
-                this.carriage.x = loc.X;
-            }
-            if (this.carriage.hasBall) {
-                this.ball.x -= lastCarrieage - this.carriage.x;
-            }
-        };
-        canvas.onclick = (event) => {
-            event.preventDefault();
-            if (this.carriage.hasBall) {
-                let coord = this.BounceFunc();
-                this.ball.dx = coord.x;
-                this.ball.dy = coord.y;
-                this.carriage.hasBall = false;
-            }
+        this.touchPosX;
+        if (IsMobile) {
+            element.addEventListener('touchmove', this.OnTouchMove);
+        } else {
+            document.addEventListener('keydown', this.OnKeyDown);
+            canvas.addEventListener('mousemove', this.OnMouseMove);
+        }
+        canvas.addEventListener('click', this.OnClick);
+    }
+
+    OnClick = (event) => {
+        if (this.stop) { return; }
+        event.preventDefault();
+        if (this.carriage.hasBall) {
+            let coord = this.BounceFunc();
+            this.ball.dx = coord.x;
+            this.ball.dy = coord.y;
+            this.carriage.hasBall = false;
         }
     }
 
-    OnKeyDown(event) {
+    OnTouchMove = (event) => {
+        event.preventDefault();
+        if (this.stop) { return; }
+        if (!this.touchPosX) { this.touchPosX = event.touches[0].screenX; }
+        let delta = event.touches[0].screenX - this.touchPosX;
+        if (this.carriage.x + delta > 0 && this.carriage.x + this.carriage.width + delta < this.window.width) {
+            this.carriage.x += delta;
+            if (this.carriage.hasBall) {
+                this.ball.x += delta;
+            }
+        }
+        this.touchPosX = event.touches[0].screenX;
+    }
+
+    OnMouseMove = (event) => {
+        if (this.stop) { return; }
+        let loc = windowToCanvas(this.ctx.canvas, event.clientX, event.clientY);
+        let lastCarrieage = this.carriage.x;
+        loc.X -= this.carriage.width / 2;
+        if (loc.X <= 0) {
+            this.carriage.x = 0;
+        } else if (loc.X + this.carriage.width >= this.ctx.canvas.width) {
+            this.carriage.x = this.ctx.canvas.width - this.carriage.width;
+        } else {
+            this.carriage.x = loc.X;
+        }
+        if (this.carriage.hasBall) {
+            this.ball.x -= lastCarrieage - this.carriage.x;
+        }
+    }
+
+    OnKeyDown = (event) => {
+        if (this.stop) { return; }
         switch (event.code) {
             case 'Space':
                 event.preventDefault();
@@ -119,7 +146,7 @@ export class Arkanoid {
         this.ball.y = this.carriage.y - this.ball.rad;
         this.ball.dx = 0;
         this.ball.dy = 0;
-        this.ball.speed = 3;
+        this.ball.speed = this.window.width / 150;
         this.bonus = {
             active: [],
             nextBonus: randomInt(300, 900),
@@ -129,8 +156,8 @@ export class Arkanoid {
         this.score = 0;
         this.OnLifesChanged();
         this.OnScoreChanged();
-        document.onkeydown = document.onkeydown ?? this.OnKeyDown.bind(this);
         if (this.stop) {
+            if (!IsMobile) { document.addEventListener('keydown', this.OnKeyDown); }
             this.stop = false;
             this.Draw();
         }
@@ -138,7 +165,7 @@ export class Arkanoid {
 
     Stop() {
         this.stop = true;
-        document.onkeydown = null;
+        if (!IsMobile) { document.removeEventListener('keydown', this.OnKeyDown); }
     }
 
     Resize(canvas) {
@@ -347,15 +374,17 @@ export class Arkanoid {
             this.ball.x = this.carriage.x + this.carriage.width / 2;
             this.ball.dx = 0;
             this.ball.dy = 0;
-            this.ball.speed = 3;
+            this.ball.speed = this.window.width / 150;
             this.carriage.hasBall = true;
         } else {
             this.stop = true;
+            if (!IsMobile) { document.removeEventListener('keydown', this.OnKeyDown); }
         }
     }
 
     Win() {
         this.stop = true;
+        if (!IsMobile) { document.removeEventListener('keydown', this.OnKeyDown); }
     }
 
     DrawBrick(i, j, brick) {
@@ -393,7 +422,7 @@ export class Arkanoid {
         this.ctx.fillRect(bonus.x, bonus.y, this.brick.width, this.brick.width);
     }
 
-    Draw() {
+    Draw = () => {
         this.ctx.clearRect(0, 0, this.window.width, this.window.height);
 
         this.DrawBall();
@@ -411,7 +440,7 @@ export class Arkanoid {
             this.DrawBonus(this.bonus.falling[i]);
         }
         if (!this.stop) {
-            requestAnimationFrame(this.Draw.bind(this));
+            requestAnimationFrame(this.Draw);
         }
 
         this.Move();

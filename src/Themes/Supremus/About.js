@@ -7,7 +7,7 @@ export default class About {
 
         [this.leftArrow, this.page] = GetAbout();
 
-        if (this.leftArrow) { this.leftArrow.addEventListener('click', toMenu); }
+        this.leftArrow.addEventListener('click', toMenu);
     }
 
     Show(className) {

@@ -1,5 +1,5 @@
 import { createDiv, createSVGElement } from '@/utils.js';
-import { Themes as AllThemes } from '@/constants.js';
+import { Themes as AllThemes, IsMobile } from '@/constants.js';
 
 const THEMES = AllThemes.filter(theme => theme.name !== 'Supremus');
 
@@ -8,6 +8,7 @@ export default class Themes {
     constructor(element, toMenu, changeTheme, clearEvents) {
         this.rootElement = element;
         this.posY = 0;
+        this.deltaY;
 
         [this.page, this.themes, this.rightArrow] = GetThemes();
         this.container = this.page.children[0];
@@ -17,9 +18,7 @@ export default class Themes {
                 this.page.classList.add('leaveRightBg');
                 this.rightArrow.remove();
 
-                document.onwheel = null;
                 clearEvents();
-
                 this.rootElement.classList.add('blocked');
 
                 setTimeout(() => {
@@ -30,11 +29,39 @@ export default class Themes {
             });
         });
 
-        if (this.rightArrow) { this.rightArrow.addEventListener('click', toMenu); }
+        this.rightArrow.addEventListener('click', toMenu);
+
+        if (IsMobile) {
+            this.page.addEventListener('touchstart', this.OnTouchStart);
+            this.page.addEventListener('touchmove', this.OnTouchMove);
+        } else {
+            this.page.addEventListener('wheel', this.OnWheel);
+        }
     }
 
-    OnScroll(e) {
-        let delta = e.deltaY > 0 ? 100 : -100;
+    OnTouchStart = (event) => {
+        this.deltaY = event.touches[0].screenY;
+    }
+
+    OnTouchMove = (event) => {
+        if (this.container.clientHeight < window.innerHeight) { return; }
+        let dy = event.touches[0].screenY - this.deltaY;
+        if (Math.abs(dy) > 15) {
+            dy = dy > 0 ? this.container.clientHeight / 2 : -this.container.clientHeight / 2;
+        }
+        if (this.posY + dy > 0) {
+            dy = -this.posY;
+        } else if (this.posY + dy < -(this.container.clientHeight - window.innerHeight + 100)) {
+            dy = -(this.container.clientHeight - window.innerHeight + 100) - this.posY;
+        }
+        this.posY += dy;
+        this.container.style.transform = `translateY(${this.posY + "px"})`;
+        this.deltaY = event.touches[0].screenY;
+    }
+
+    OnWheel = (event) => {
+        if (this.container.clientHeight < window.innerHeight) { return; }
+        let delta = event.deltaY > 0 ? 100 : -100;
         if (this.posY - delta <= 0 && this.posY - delta >= -(this.container.clientHeight - window.innerHeight + 100)) {
             this.posY -= delta;
             this.container.style.transform = `translateY(${this.posY + "px"})`;
@@ -49,15 +76,12 @@ export default class Themes {
         setTimeout(() => {
             this.page.classList.remove(className);
             this.rootElement.insertAdjacentElement('afterBegin', this.rightArrow);
-            document.onwheel = this.OnScroll.bind(this);
         }, 3000)
     }
 
     Leave(className) {
         this.page.classList.add(className);
         this.rightArrow.remove();
-
-        document.onwheel = null;
 
         setTimeout(() => {
             this.page.classList.remove(className);

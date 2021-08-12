@@ -1,8 +1,9 @@
 import { randomInt } from '@/utils.js';
+import { IsMobile } from "@/constants";
 
 export class Tetris {
 
-    constructor(canvas, onFigureChanged, onScoreChanged, width = 20, height = 20) {
+    constructor(element, canvas, onFigureChanged, onScoreChanged, width = 20, height = 20) {
         this.onFigureChanged = onFigureChanged;
         this.onScoreChanged = onScoreChanged;
         this.ctx = canvas.getContext('2d');
@@ -30,12 +31,57 @@ export class Tetris {
         this.nextFigure = 0;
         this.fall = 60;
         this.speed = 1;
+        this.touchPosX;
+        this.touchPosY;
+        this.figurePosX;
+        if (IsMobile) {
+            element.addEventListener('touchstart', this.OnTouchStart);
+            element.addEventListener('touchmove', this.OnTouchMove);
+        }
+        canvas.addEventListener('click', this.OnClick);
     }
 
-    OnKeyDown(event) {
+    OnClick = (event) => {
+        if (this.stop) { return; }
+        event.preventDefault();
+        let newValue = this.Rotate();
+        if (this.Check(this.figureCoord.x, this.figureCoord.y, newValue)) {
+            this.figure = newValue;
+            this.CalcProjection();
+        }
+    }
+
+    OnTouchStart = (event) => {
+        this.touchPosX = event.touches[0].screenX;
+        this.touchPosY = event.touches[0].screenY;
+        this.figurePosX = this.figureCoord.x;
+    }
+
+    OnTouchMove = (event) => {
+        event.preventDefault();
+        if (this.stop) { return; }
+        if (Math.abs(event.touches[0].screenX - this.touchPosX) > Math.abs(event.touches[0].screenY - this.touchPosY)) {
+            let delta = Math.floor((event.touches[0].screenX - this.touchPosX) / (window.innerWidth / this.window.width * 1.5))
+            if (this.Check(this.figurePosX + delta, this.figureCoord.y, this.figure)) {
+                this.figureCoord.x = this.figurePosX + delta;
+                this.CalcProjection();
+            }
+        } else if (Math.abs(event.touches[0].screenY - this.touchPosY) > 90) {
+            this.figureCoord = this.projection;
+            let newValue = this.figureCoord.y + 1;
+            if (this.Check(this.figureCoord.x, newValue, this.figure, true)) {
+                this.figureCoord.y = newValue;
+                this.CalcProjection();
+            }
+            this.touchPosY = event.touches[0].screenY;
+        }
+    }
+
+    OnKeyDown = (event) => {
+        if (this.stop) { return; }
         let newValue;
         switch (event.code) {
-            case "ArrowLeft":
+            case 'ArrowLeft':
                 event.preventDefault();
                 newValue = this.figureCoord.x - 1;
                 if (this.Check(newValue, this.figureCoord.y, this.figure)) {
@@ -43,7 +89,7 @@ export class Tetris {
                     this.CalcProjection();
                 }
                 break;
-            case "ArrowRight":
+            case 'ArrowRight':
                 event.preventDefault();
                 newValue = this.figureCoord.x + 1;
                 if (this.Check(newValue, this.figureCoord.y, this.figure)) {
@@ -51,7 +97,7 @@ export class Tetris {
                     this.CalcProjection();
                 }
                 break;
-            case "ArrowDown":
+            case 'ArrowDown':
                 event.preventDefault();
                 newValue = this.figureCoord.y + 1;
                 if (this.Check(this.figureCoord.x, newValue, this.figure, true)) {
@@ -59,7 +105,7 @@ export class Tetris {
                     this.CalcProjection();
                 }
                 break;
-            case "KeyR":
+            case 'KeyR':
                 event.preventDefault();
                 newValue = this.Rotate();
                 if (this.Check(this.figureCoord.x, this.figureCoord.y, newValue)) {
@@ -67,7 +113,7 @@ export class Tetris {
                     this.CalcProjection();
                 }
                 break;
-            case "Space":
+            case 'Space':
                 event.preventDefault();
                 this.figureCoord = this.projection;
                 newValue = this.figureCoord.y + 1;
@@ -98,7 +144,7 @@ export class Tetris {
         this.CalcProjection();
 
         if (this.stop) {
-            document.onkeydown = this.OnKeyDown.bind(this);
+            if (!IsMobile) { document.addEventListener('keydown', this.OnKeyDown); }
             this.stop = false;
             this.Draw();
         }
@@ -106,7 +152,7 @@ export class Tetris {
 
     Stop() {
         this.stop = true;
-        document.onkeydown = null;
+        if (!IsMobile) { document.removeEventListener('keydown', this.OnKeyDown); }
     }
 
     Rotate() {
@@ -138,7 +184,7 @@ export class Tetris {
         this.onFigureChanged();
 
         if (!this.Check(this.figureCoord.x, this.figureCoord.y, this.figure)) {
-            document.onkeydown = null;
+            if (!IsMobile) { document.removeEventListener('keydown', this.OnKeyDown); }
             this.stop = true;
         }
 
@@ -195,7 +241,7 @@ export class Tetris {
         this.ctx.fillRect(j * this.tile, i * this.tile, this.tile, this.tile);
     }
 
-    Draw() {
+    Draw = () => {
         this.ctx.clearRect(0, 0, this.window.width * this.tile, this.window.height * this.tile);
 
         for (let i = 0; i < this.figure.length; i++) {
@@ -216,7 +262,7 @@ export class Tetris {
         }
 
         if (!this.stop) {
-            requestAnimationFrame(this.Draw.bind(this));
+            requestAnimationFrame(this.Draw);
         }
 
         this.fall -= this.speed;

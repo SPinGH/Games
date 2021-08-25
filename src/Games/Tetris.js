@@ -61,7 +61,7 @@ export class Tetris {
         event.preventDefault();
         if (this.stop) { return; }
         if (Math.abs(event.touches[0].screenX - this.touchPosX) > Math.abs(event.touches[0].screenY - this.touchPosY)) {
-            let delta = Math.floor((event.touches[0].screenX - this.touchPosX) / (window.innerWidth / this.window.width * 1.5))
+            let delta = Math.floor((event.touches[0].screenX - this.touchPosX) / (window.innerWidth / (this.window.width * 1.5)))
             if (this.Check(this.figurePosX + delta, this.figureCoord.y, this.figure)) {
                 this.figureCoord.x = this.figurePosX + delta;
                 this.CalcProjection();
@@ -241,8 +241,14 @@ export class Tetris {
         this.ctx.fillRect(j * this.tile, i * this.tile, this.tile, this.tile);
     }
 
-    Draw = () => {
+    BeforeDraw() {
         this.ctx.clearRect(0, 0, this.window.width * this.tile, this.window.height * this.tile);
+    }
+
+    Draw = () => {
+        if (this.stop) { return; }
+
+        this.BeforeDraw();
 
         for (let i = 0; i < this.figure.length; i++) {
             this.DrawTile(this.projection.y + this.figure[i][1], this.projection.x + this.figure[i][0], -1);
@@ -261,10 +267,6 @@ export class Tetris {
             }
         }
 
-        if (!this.stop) {
-            requestAnimationFrame(this.Draw);
-        }
-
         this.fall -= this.speed;
         if (this.fall <= 0) {
             this.fall = 60;
@@ -275,5 +277,6 @@ export class Tetris {
                 this.CalcProjection();
             }
         }
+        requestAnimationFrame(this.Draw);
     }
 }

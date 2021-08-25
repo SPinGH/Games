@@ -132,7 +132,6 @@ export class TicTacToe {
 
     HardPCMove() {
         let index = this.Minimax(this.secondPlayer).index;
-        console.log(index, this.matrix);
         this.matrix[index] = this.secondPlayer;
         this.firstIsNext = !this.firstIsNext;
         this.onMatrixChanged(index);
@@ -160,6 +159,10 @@ export class TicTacToe {
             this.winner = this.firstIsNext ? this.firstPlayer : this.secondPlayer;
             this.cross = status;
             this.onCrossChanged();
+            return;
+        }
+        if (!this.matrix.includes(null)) {
+            this.winner = 'nobody';
             return;
         }
         if (this.withAI) {

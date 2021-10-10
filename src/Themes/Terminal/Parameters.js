@@ -6,7 +6,8 @@ const Parameters = {
     letterWidth: 0,
     letterHeight: 0,
     fontSize: 0,
-    curPos: '/',
+    curPos: 'C:\\',
+    curPosObj: null,
     options: localStorage.terminalOptions ?
         JSON.parse(localStorage.terminalOptions) : {
             color: '#1eff00',
